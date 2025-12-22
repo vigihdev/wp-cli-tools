@@ -7,7 +7,7 @@ namespace Vigihdev\WpCliTools\Exceptions\Handler;
 use Throwable;
 use Vigihdev\WpCliTools\Exceptions\WpCliToolsException;
 
-final class DefaultExceptionHandler implements HandlerExceptionInterface
+class DefaultExceptionHandler implements HandlerExceptionInterface
 {
 
     public function handle(Throwable $e): void

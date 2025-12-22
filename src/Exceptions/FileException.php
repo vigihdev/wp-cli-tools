@@ -20,40 +20,91 @@ final class FileException extends WpCliToolsException
     public static function notFound(string $filepath): self
     {
         return new self(
-            sprintf("File %s tidak ditemukan: %s", basename($filepath), $filepath),
-            self::NOT_FOUND
+            message: sprintf("File %s tidak ditemukan: %s", basename($filepath), $filepath),
+            code: self::NOT_FOUND,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file ada di lokasi yang benar",
+                "Periksa apakah file memiliki izin read (444) atau lebih",
+                "Periksa apakah file dihapus atau diarahkan ke tempat lain",
+                "Coba ulangi operasi setelah beberapa saat"
+            ]
         );
     }
 
     public static function notReadable(string $filepath): self
     {
         return new self(
-            sprintf("File %s tidak dapat dibaca: %s", basename($filepath), $filepath),
-            self::NOT_READABLE
+            message: sprintf("File %s tidak dapat dibaca: %s", basename($filepath), $filepath),
+            code: self::NOT_READABLE,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki izin read (444) atau lebih",
+                "Periksa apakah file dihapus atau diarahkan ke tempat lain",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
     public static function notWritable(string $filepath): self
     {
         return new self(
-            sprintf("File %s tidak dapat ditulis: %s. Periksa izin (permission) atau atribut read-only.", basename($filepath), $filepath),
-            self::NOT_WRITABLE
+            message: sprintf("File %s tidak dapat ditulis: %s. Periksa izin (permission) atau atribut read-only.", basename($filepath), $filepath),
+            code: self::NOT_WRITABLE,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki izin write (664) atau lebih",
+                "Periksa apakah file dihapus atau diarahkan ke tempat lain",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
     public static function invalidExtension(string $filepath, string $expected): self
     {
         return new self(
-            sprintf("File %s harus berekstensi .%s", basename($filepath), $expected),
-            self::INVALID_EXTENSION
+            message: sprintf("File %s harus berekstensi .%s", basename($filepath), $expected),
+            code: self::INVALID_EXTENSION,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki ekstensi yang sesuai",
+                "Ubah ekstensi file menjadi .{$expected}",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
     public static function invalidMimeType(string $filepath, string $expected): self
     {
         return new self(
-            sprintf("File %s harus berupa gambar dengan tipe mime %s", basename($filepath), $expected),
-            self::INVALID_MIME_TYPE
+            message: sprintf("File %s harus berupa gambar dengan tipe mime %s", basename($filepath), $expected),
+            code: self::INVALID_MIME_TYPE,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki tipe mime yang sesuai",
+                "Ubah tipe mime file menjadi {$expected}",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
@@ -66,8 +117,18 @@ final class FileException extends WpCliToolsException
         }
 
         return new self(
-            $message,
-            self::INVALID_JSON
+            message: $message,
+            code: self::INVALID_JSON,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki format JSON yang valid",
+                "Ubah format file menjadi JSON yang valid",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
@@ -79,8 +140,18 @@ final class FileException extends WpCliToolsException
         }
 
         return new self(
-            $message,
-            self::INVALID_XML
+            message: $message,
+            code: self::INVALID_XML,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki format XML yang valid",
+                "Ubah format file menjadi XML yang valid",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
@@ -92,29 +163,59 @@ final class FileException extends WpCliToolsException
         }
 
         return new self(
-            $message,
-            self::INVALID_CSV
+            message: $message,
+            code: self::INVALID_CSV,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki format CSV yang valid",
+                "Ubah format file menjadi CSV yang valid",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
     public static function fileTooLarge(string $filepath, int $maxSize, int $actualSize): self
     {
         return new self(
-            sprintf(
+            message: sprintf(
                 'File %s terlalu besar: %s (maksimal %s)',
                 basename($filepath),
                 size_format($actualSize),
                 size_format($maxSize)
             ),
-            self::FILE_TOO_LARGE
+            code: self::FILE_TOO_LARGE,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki ukuran yang sesuai",
+                "Ubah ukuran file menjadi ukuran yang sesuai",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 
     public static function emptyFile(string $filepath): self
     {
         return new self(
-            sprintf('File %s kosong atau tidak memiliki konten', basename($filepath)),
-            self::EMPTY_FILE
+            message: sprintf('File %s kosong atau tidak memiliki konten', basename($filepath)),
+            code: self::EMPTY_FILE,
+            context: [
+                'path' => $filepath,
+                'basename' => basename($filepath),
+                'dirname' => dirname($filepath),
+            ],
+            solutions: [
+                "Periksa apakah file memiliki konten",
+                "Ubah konten file menjadi konten yang sesuai",
+                "Coba ulangi operasi setelah beberapa saat"
+            ],
         );
     }
 }

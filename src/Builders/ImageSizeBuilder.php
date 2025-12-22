@@ -41,6 +41,13 @@ final class ImageSizeBuilder
         return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
     }
 
+    /** 
+     * Membuat ukuran gambar yang sesuai dengan height yang diinginkan
+     * 
+     * @param int $height Height yang diinginkan
+     * @return ImageProviderDto Ukuran gambar yang sesuai dengan height yang diinginkan
+     * 
+     */
     public function fromHeight(int $height): ImageProviderDto
     {
         $ratio = $this->getRatioDto();
@@ -49,6 +56,14 @@ final class ImageSizeBuilder
         return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
     }
 
+    /** 
+     * Membuat ukuran gambar yang sesuai dengan batas maksimum width dan height
+     * 
+     * @param int $maxWidth Maksimum width yang diizinkan
+     * @param int $maxHeight Maksimum height yang diizinkan
+     * @return ImageProviderDto Ukuran gambar yang sesuai dengan batas maksimum
+     * 
+     */
     public function fitWithin(int $maxWidth, int $maxHeight): ImageProviderDto
     {
         $ratio = $this->getRatioDto();
@@ -66,6 +81,14 @@ final class ImageSizeBuilder
         return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
     }
 
+    /** 
+     * Membuat ukuran gambar yang sesuai dengan area yang diinginkan
+     * 
+     * @param int $width Width yang diinginkan
+     * @param int $height Height yang diinginkan
+     * @return ImageProviderDto Ukuran gambar yang sesuai dengan area yang diinginkan
+     * 
+     */
     public function fillArea(int $width, int $height): ImageProviderDto
     {
         $ratio = $this->getRatioDto();
