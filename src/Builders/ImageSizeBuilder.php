@@ -23,14 +23,10 @@ final class ImageSizeBuilder
         private readonly string $filepath
     ) {
 
-        try {
-            FileValidator::validate($filepath)
-                ->mustExist()
-                ->mustBeReadable()
-                ->mustBeMimeType();
-        } catch (WpCliToolsException $e) {
-            echo $e->getMessage();
-        }
+        FileValidator::validate($filepath)
+            ->mustExist()
+            ->mustBeReadable()
+            ->mustBeMimeType();
 
         if (!$this->fileInfo) {
             $this->fileInfo = new SplFileInfo($filepath);

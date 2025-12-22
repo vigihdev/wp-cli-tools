@@ -14,11 +14,17 @@ final class ImageProviderDto implements ImageProviderInterface
         private readonly DimensionsImageDto $dimensions
     ) {}
 
+    /**
+     * @return RatioImageDto
+     */
     public function getRatio(): RatioImageDto
     {
         return $this->ratio;
     }
 
+    /**
+     * @return DimensionsImageDto
+     */
     public function getDimensions(): DimensionsImageDto
     {
         return $this->dimensions;

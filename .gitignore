@@ -12,6 +12,7 @@ vendor/
 source/
 tests/
 .trae/
+.phpunit.cache/
 dev.php
 dev.js
 .lingma

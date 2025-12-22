@@ -15,26 +15,41 @@ final class DimensionsImageDto implements DimensionsImageInterface, StringAbleIn
         private readonly RatioImageDto $originalRatio,
     ) {}
 
+    /**
+     * @return int
+     */
     public function getWidth(): int
     {
         return $this->width;
     }
 
+    /**
+     * @return int
+     */
     public function getHeight(): int
     {
         return $this->height;
     }
 
+    /**
+     * @return RatioImageDto
+     */
     public function getOriginalRatio(): RatioImageDto
     {
         return $this->originalRatio;
     }
 
+    /**
+     * @return float
+     */
     public function getAspectRatio(): float
     {
         return $this->height > 0 ? $this->width / $this->height : 0;
     }
 
+    /**
+     * @return string
+     */
     public function toString(): string
     {
         return sprintf(
