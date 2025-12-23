@@ -33,6 +33,13 @@ final class ImageSizeBuilder
         }
     }
 
+    /** 
+     * Membuat ukuran gambar yang sesuai dengan width yang diinginkan
+     * 
+     * @param int $width Width yang diinginkan
+     * @return ImageProviderDto Ukuran gambar yang sesuai dengan width yang diinginkan
+     * 
+     */
     public function fromWidth(int $width): ImageProviderDto
     {
         $ratio = $this->getRatioDto();
@@ -117,12 +124,22 @@ final class ImageSizeBuilder
         return $this->ratioDto;
     }
 
-
+    /**
+     * Menghitung dan mendapatkan rasio gambar
+     *
+     * @return RatioImageDto Rasio gambar yang telah dihitung
+     */
     private function calculateRatio(): RatioImageDto
     {
         return $this->getRatio();
     }
 
+    /** 
+     * Membuat rasio gambar dari metadata
+     * 
+     * @return RatioImageDto Rasio gambar
+     * 
+     */
     private function getRatio(): RatioImageDto
     {
         if (extension_loaded('imagick')) {
@@ -142,6 +159,12 @@ final class ImageSizeBuilder
         return $this->ratioFromMetadata();
     }
 
+    /**
+     * Membuat rasio gambar dari Imagick
+     * 
+     * @return RatioImageDto Rasio gambar
+     * 
+     */
     private function ratioFromImagick(): RatioImageDto
     {
         if (!extension_loaded('imagick')) {
@@ -155,6 +178,12 @@ final class ImageSizeBuilder
         return $this->createRatioDto($width, $height);
     }
 
+    /** 
+     * Membuat rasio gambar dari GD
+     * 
+     * @return RatioImageDto Rasio gambar
+     * 
+     */
     private function ratioFromGD(): RatioImageDto
     {
         if (!extension_loaded('gd')) {
