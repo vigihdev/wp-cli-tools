@@ -14,6 +14,29 @@ final class UriException extends WpCliToolsException
     public const INVALID_FRAGMENT = 4006;
     public const UNSUPPORTED_SCHEME = 4007;
     public const MALFORMED_URI = 4008;
+    public const NOT_FOUND = 4009;
+
+    public static function notFound(string $uri, int $statusCode = 0): self
+    {
+        $message = $statusCode
+            ? sprintf("URI not found: %s (Status Code: %d)", $uri, $statusCode)
+            : sprintf("URI not found: %s", $uri);
+
+        return new self(
+            message: $message,
+            code: self::NOT_FOUND,
+            previous: null,
+            context: [
+                'uri' => $uri,
+                'status_code' => $statusCode,
+            ],
+            solutions: [
+                "Check if the URI is properly formatted",
+                "Ensure special characters are URL-encoded",
+                "Verify the URI follows RFC 3986 standards"
+            ]
+        );
+    }
 
     public static function invalid(string $uri, string $reason = ''): self
     {
@@ -29,6 +52,11 @@ final class UriException extends WpCliToolsException
                 'uri' => $uri,
                 'reason' => $reason,
                 'filtered' => filter_var($uri, FILTER_VALIDATE_URL)
+            ],
+            solutions: [
+                "Check if the URI is properly formatted",
+                "Ensure special characters are URL-encoded",
+                "Verify the URI follows RFC 3986 standards"
             ]
         );
     }

@@ -20,7 +20,7 @@ final class FileException extends WpCliToolsException
     public static function notFound(string $filepath): self
     {
         return new self(
-            message: sprintf("File %s tidak ditemukan: %s", basename($filepath), $filepath),
+            message: sprintf("File %s tidak ditemukan", basename($filepath)),
             code: self::NOT_FOUND,
             context: [
                 'path' => $filepath,
@@ -39,7 +39,7 @@ final class FileException extends WpCliToolsException
     public static function notReadable(string $filepath): self
     {
         return new self(
-            message: sprintf("File %s tidak dapat dibaca: %s", basename($filepath), $filepath),
+            message: sprintf("File %s tidak dapat dibaca", basename($filepath)),
             code: self::NOT_READABLE,
             context: [
                 'path' => $filepath,
@@ -57,7 +57,7 @@ final class FileException extends WpCliToolsException
     public static function notWritable(string $filepath): self
     {
         return new self(
-            message: sprintf("File %s tidak dapat ditulis: %s. Periksa izin (permission) atau atribut read-only.", basename($filepath), $filepath),
+            message: sprintf("File %s tidak dapat ditulis. Periksa izin (permission) atau atribut read-only.", basename($filepath)),
             code: self::NOT_WRITABLE,
             context: [
                 'path' => $filepath,

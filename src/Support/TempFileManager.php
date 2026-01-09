@@ -86,6 +86,7 @@ final class TempFileManager
         }
         throw FileException::notWritable($tempFile);
     }
+
     /**
      * Get path of temp file.
      * 

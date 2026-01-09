@@ -2,19 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliTools\Builders;
+namespace Vigihdev\WpCliTools\Support;
 
 use Imagick;
 use SplFileInfo;
-use Vigihdev\WpCliTools\DTOs\Image\{DimensionsImageDto, ImageProviderDto, RatioImageDto};
-use Vigihdev\WpCliTools\Exceptions\{FileException, WpCliToolsException};
+use Vigihdev\WpCliTools\DTOs\Image\{DimensionsImageDto, RatioImageDto};
+use Vigihdev\WpCliTools\Exceptions\{ImageException, WpCliToolsException};
 use Vigihdev\WpCliTools\Validators\FileValidator;
 
-final class ImageSizeBuilder
+final class ImageSizeCalculator
 {
-    private ?SplFileInfo $fileInfo = null;
 
-    private ?RatioImageDto $ratioDto = null;
+    /**
+     * File gambar yang akan diubah ukurannya
+     * @var SplFileInfo $fileInfo File gambar yang akan diubah ukurannya
+     */
+    private readonly SplFileInfo $fileInfo;
+
+    /**
+     * Dimensi gambar asli
+     * @var DimensionsImageDto $original Dimensi gambar asli
+     */
+    private readonly DimensionsImageDto $original;
 
     /**
      * @param string $filepath Path ke file gambar
@@ -29,59 +38,58 @@ final class ImageSizeBuilder
             ->mustBeReadable()
             ->mustBeMimeType();
 
-        if (!$this->fileInfo) {
-            $this->fileInfo = new SplFileInfo($filepath);
-        }
-    }
+        $this->fileInfo = new SplFileInfo($filepath);
 
-    public function getDimesion(): ImageProviderDto
-    {
-        $ratio = $this->getRatioDto();
         list($width, $height) = getimagesize($this->filepath);
-        return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
+        $this->original = new DimensionsImageDto($width, $height, $this->calculateRatio());
     }
 
-    /** 
-     * Membuat ukuran gambar yang sesuai dengan width yang diinginkan
-     * 
-     * @param int $width Width yang diinginkan
-     * @return ImageProviderDto Ukuran gambar yang sesuai dengan width yang diinginkan
-     * 
+    /**
+     * Mendapatkan dimensi gambar asli
+     *
+     * @return DimensionsImageDto Dimensi gambar asli
      */
-    public function fromWidth(int $width): ImageProviderDto
+    public function getDimensions(): DimensionsImageDto
     {
-        $ratio = $this->getRatioDto();
+        return $this->original;
+    }
+
+    /**
+     * Mengubah ukuran gambar menjadi lebar tertentu, tinggi otomatis
+     *
+     * @param int $width Lebar yang diinginkan
+     * @return DimensionsImageDto Dimensi gambar setelah diubah ukurannya
+     */
+    public function toWidth(int $width): DimensionsImageDto
+    {
+        $ratio = $this->getDimensions()->getOriginalRatio();
         $height = (int) round($width / $ratio->getRatio());
-
-        return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
+        return new DimensionsImageDto($width, $height, $ratio);
     }
 
-    /** 
-     * Membuat ukuran gambar yang sesuai dengan height yang diinginkan
-     * 
-     * @param int $height Height yang diinginkan
-     * @return ImageProviderDto Ukuran gambar yang sesuai dengan height yang diinginkan
-     * 
+    /**
+     * Mengubah ukuran gambar menjadi tinggi tertentu, lebar otomatis
+     *
+     * @param int $height Tinggi yang diinginkan
+     * @return DimensionsImageDto Dimensi gambar setelah diubah ukurannya
      */
-    public function fromHeight(int $height): ImageProviderDto
+    public function toHeight(int $height): DimensionsImageDto
     {
-        $ratio = $this->getRatioDto();
+        $ratio = $this->getDimensions()->getOriginalRatio();
         $width = (int) round($height * $ratio->getRatio());
-
-        return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
+        return new DimensionsImageDto($width, $height, $ratio);
     }
 
-    /** 
-     * Membuat ukuran gambar yang sesuai dengan batas maksimum width dan height
-     * 
-     * @param int $maxWidth Maksimum width yang diizinkan
-     * @param int $maxHeight Maksimum height yang diizinkan
-     * @return ImageProviderDto Ukuran gambar yang sesuai dengan batas maksimum
-     * 
+    /**
+     * Mengubah ukuran gambar menjadi ukuran tertentu, mempertahankan rasio asli
+     *
+     * @param int $width Lebar yang diinginkan
+     * @param int $height Tinggi yang diinginkan
+     * @return DimensionsImageDto Dimensi gambar setelah diubah ukurannya
      */
-    public function fitWithin(int $maxWidth, int $maxHeight): ImageProviderDto
+    public function fitWithin(int $maxWidth, int $maxHeight): DimensionsImageDto
     {
-        $ratio = $this->getRatioDto();
+        $ratio = $this->getDimensions()->getOriginalRatio();
 
         // Hitung skala untuk width dan height
         $widthScale = $maxWidth / $ratio->getWidth();
@@ -93,20 +101,19 @@ final class ImageSizeBuilder
         $width = (int) round($ratio->getWidth() * $scale);
         $height = (int) round($ratio->getHeight() * $scale);
 
-        return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($width, $height, $ratio));
+        return new DimensionsImageDto($width, $height, $ratio);
     }
 
-    /** 
-     * Membuat ukuran gambar yang sesuai dengan area yang diinginkan
-     * 
-     * @param int $width Width yang diinginkan
-     * @param int $height Height yang diinginkan
-     * @return ImageProviderDto Ukuran gambar yang sesuai dengan area yang diinginkan
-     * 
+    /**
+     * Mengubah ukuran gambar menjadi ukuran tertentu, mempertahankan rasio asli
+     *
+     * @param int $width Lebar yang diinginkan
+     * @param int $height Tinggi yang diinginkan
+     * @return DimensionsImageDto Dimensi gambar setelah diubah ukurannya
      */
-    public function fillArea(int $width, int $height): ImageProviderDto
+    public function fillArea(int $width, int $height): DimensionsImageDto
     {
-        $ratio = $this->getRatioDto();
+        $ratio = $this->getDimensions()->getOriginalRatio();
         $imageRatio = $ratio->getRatio();
         $targetRatio = $width / $height;
 
@@ -120,16 +127,7 @@ final class ImageSizeBuilder
             $newHeight = (int) round($width / $imageRatio);
         }
 
-        return new ImageProviderDto(ratio: $ratio, dimensions: new DimensionsImageDto($newWidth, $newHeight, $ratio));
-    }
-
-    private function getRatioDto(): RatioImageDto
-    {
-        if ($this->ratioDto === null) {
-            $this->ratioDto = $this->calculateRatio();
-        }
-
-        return $this->ratioDto;
+        return new DimensionsImageDto($newWidth, $newHeight, $ratio);
     }
 
     /**
@@ -151,17 +149,11 @@ final class ImageSizeBuilder
     private function getRatio(): RatioImageDto
     {
         if (extension_loaded('imagick')) {
-            try {
-                return $this->ratioFromImagick();
-            } catch (\Exception $e) {
-            }
+            return $this->ratioFromImagick();
         }
 
         if (extension_loaded('gd')) {
-            try {
-                return $this->ratioFromGD();
-            } catch (\Exception $e) {
-            }
+            return $this->ratioFromGD();
         }
 
         return $this->ratioFromMetadata();
@@ -176,7 +168,7 @@ final class ImageSizeBuilder
     private function ratioFromImagick(): RatioImageDto
     {
         if (!extension_loaded('imagick')) {
-            throw new \RuntimeException('Imagick extension is not available');
+            throw ImageException::libraryNotAvailable('Imagick');
         }
 
         $image = new Imagick($this->filepath);
@@ -195,12 +187,12 @@ final class ImageSizeBuilder
     private function ratioFromGD(): RatioImageDto
     {
         if (!extension_loaded('gd')) {
-            throw new \RuntimeException('GD extension is not available');
+            throw ImageException::libraryNotAvailable('GD');
         }
 
         $imageInfo = getimagesize($this->filepath);
         if ($imageInfo === false) {
-            throw new \RuntimeException('Failed to get image dimensions using GD');
+            ImageException::invalidDimensions(0, 0);
         }
 
         [$width, $height] = $imageInfo;
@@ -208,6 +200,11 @@ final class ImageSizeBuilder
         return $this->createRatioDto($width, $height);
     }
 
+    /**
+     * Membuat rasio gambar dari metadata
+     * 
+     * @return RatioImageDto Rasio gambar
+     */
     private function ratioFromMetadata(): RatioImageDto
     {
 
@@ -230,9 +227,17 @@ final class ImageSizeBuilder
             }
         }
 
-        throw new \RuntimeException('Could not determine image dimensions from metadata');
+        throw ImageException::invalidDimensions(0, 0);
     }
 
+    /**
+     * Membuat rasio gambar dari dimensi
+     * 
+     * @param int $width Lebar gambar
+     * @param int $height Tinggi gambar
+     * @return RatioImageDto Rasio gambar
+     * 
+     */
     private function createRatioDto(int $width, int $height): RatioImageDto
     {
         // Hitung greatest common divisor

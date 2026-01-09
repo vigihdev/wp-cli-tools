@@ -29,6 +29,31 @@ final class UriValidator
     }
 
     /**
+     * Memastikan URI benar-benar ada (dapat diakses).
+     *
+     * @return self
+     * @throws UriException
+     */
+    public function mustExist(): self
+    {
+        $this->mustBeValid();
+
+        $headers = @get_headers($this->uri);
+
+        if ($headers === false) {
+            throw UriException::notFound($this->uri);
+        }
+
+        $statusCode = intval(substr($headers[0], 9, 3));
+
+        if ($statusCode >= 400) {
+            throw UriException::notFound($this->uri, $statusCode);
+        }
+
+        return $this;
+    }
+
+    /**
      * Memastikan URI valid.
      *
      * @return self

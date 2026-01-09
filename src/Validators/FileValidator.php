@@ -97,11 +97,20 @@ final class FileValidator
      * 
      * @throws FileException
      */
-    public function mustBeExtension(string $extension): self
+    public function mustBeExtension(string|array $extension): self
     {
         $ext = strtolower(pathinfo($this->filepath, PATHINFO_EXTENSION));
-        if ($ext !== strtolower($extension)) {
-            throw FileException::invalidExtension($this->filepath, $extension);
+        if (is_string($extension)) {
+            if ($ext !== strtolower($extension)) {
+                throw FileException::invalidExtension($this->filepath, $extension);
+            }
+        }
+
+        if (is_array($extension)) {
+            $extension = array_map(fn($item) => strtolower($item), $extension);
+            if (!in_array($ext, $extension)) {
+                throw FileException::invalidExtension($this->filepath, implode(', ', $extension));
+            }
         }
 
         return $this;

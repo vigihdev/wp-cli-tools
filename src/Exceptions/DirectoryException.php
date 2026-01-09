@@ -28,7 +28,7 @@ final class DirectoryException extends WpCliToolsException
     public static function notFound(string $dirpath): self
     {
         return new self(
-            message: sprintf("Direktori %s tidak ditemukan: %s", basename($dirpath), $dirpath),
+            message: sprintf("Direktori %s tidak ditemukan.", basename($dirpath)),
             code: self::NOT_FOUND,
             context: [
                 'path' => $dirpath,
@@ -54,7 +54,7 @@ final class DirectoryException extends WpCliToolsException
     public static function notReadable(string $dirpath): self
     {
         return new self(
-            message: sprintf("Direktori %s tidak dapat dibaca: %s", basename($dirpath), $dirpath),
+            message: sprintf("Direktori %s tidak dapat dibaca.", basename($dirpath)),
             code: self::NOT_READABLE,
             context: [
                 'path' => $dirpath,
@@ -78,7 +78,7 @@ final class DirectoryException extends WpCliToolsException
     public static function notWritable(string $dirpath): self
     {
         return new self(
-            message: sprintf("Direktori %s tidak dapat ditulis: %s. Periksa izin (permission) atau atribut read-only.", basename($dirpath), $dirpath),
+            message: sprintf("Direktori %s tidak dapat ditulis. Periksa izin (permission) atau atribut read-only.", basename($dirpath)),
             code: self::NOT_WRITABLE,
             context: [
                 'path' => $dirpath,
@@ -102,7 +102,7 @@ final class DirectoryException extends WpCliToolsException
     public static function cannotCreate(string $dirpath): self
     {
         return new self(
-            message: sprintf("Tidak dapat membuat direktori %s: %s", basename($dirpath), $dirpath),
+            message: sprintf("Tidak dapat membuat direktori %s.", basename($dirpath)),
             code: self::CANNOT_CREATE,
             context: [
                 'path' => $dirpath,
@@ -127,7 +127,7 @@ final class DirectoryException extends WpCliToolsException
     public static function cannotDelete(string $dirpath): self
     {
         return new self(
-            message: sprintf("Tidak dapat menghapus direktori %s: %s", basename($dirpath), $dirpath),
+            message: sprintf("Tidak dapat menghapus direktori %s.", basename($dirpath)),
             code: self::CANNOT_DELETE,
             context: [
                 'path' => $dirpath,
@@ -152,7 +152,7 @@ final class DirectoryException extends WpCliToolsException
     public static function cannotScan(string $dirpath): self
     {
         return new self(
-            message: sprintf("Tidak dapat memindai direktori %s: %s", basename($dirpath), $dirpath),
+            message: sprintf("Tidak dapat memindai direktori %s.", basename($dirpath)),
             code: self::CANNOT_SCAN,
             context: [
                 'path' => $dirpath,
@@ -177,7 +177,7 @@ final class DirectoryException extends WpCliToolsException
     public static function notEmpty(string $dirpath): self
     {
         return new self(
-            message: sprintf("Direktori %s tidak kosong: %s", basename($dirpath), $dirpath),
+            message: sprintf("Direktori %s tidak kosong.", basename($dirpath)),
             code: self::NOT_EMPTY,
             context: [
                 'path' => $dirpath,
